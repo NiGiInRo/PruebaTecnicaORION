@@ -1,5 +1,4 @@
-# NicolasInfante
-Candidato-FullStack
+#Candidato-FullStack
 
 # ORION Maintenance Lite
 
