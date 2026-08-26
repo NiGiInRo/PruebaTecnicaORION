@@ -1,0 +1,7 @@
+CREATE TABLE cuadrilla (
+    id BIGSERIAL PRIMARY KEY,
+    codigo VARCHAR(30) NOT NULL UNIQUE,
+    nombre VARCHAR(150) NOT NULL,
+    especialidad VARCHAR(30) NOT NULL,
+    estado VARCHAR(30) NOT NULL DEFAULT 'DISPONIBLE'
+);

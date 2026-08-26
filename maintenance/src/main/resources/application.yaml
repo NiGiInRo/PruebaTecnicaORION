@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: maintenance
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:orion_maintenance}
+    username: ${DB_USER:orion}
+    password: ${DB_PASSWORD:orion}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+server:
+  port: ${SERVER_PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+orion:
+  jwt:
+    secret: ${JWT_SECRET:dev-only-secret-change-me-please-1234567890}
+    expiration-ms: ${JWT_EXPIRATION_MS:28800000}
+  averias:
+    auto-enabled: ${AVERIA_AUTO_ENABLED:false}
+    auto-interval-ms: ${AVERIA_AUTO_INTERVAL_MS:300000}

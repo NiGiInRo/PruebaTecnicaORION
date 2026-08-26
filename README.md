@@ -2,6 +2,44 @@
 
 # ORION Maintenance Lite
 
+## Cómo ejecutar
+
+```bash
+docker compose up
+```
+
+Sin pasos manuales adicionales: las migraciones de base de datos y el seed de usuarios de demo corren automáticamente al levantar el backend.
+
+- Frontend: [http://localhost:5173](http://localhost:5173)
+- API backend: expuesta internamente en la red de Docker y accesible desde el frontend vía proxy en `/api/*` (no publicada directamente al host).
+
+### Usuarios de demostración
+
+No hay registro público (ver supuestos en `BACKLOG_REFINED.md`); se crean automáticamente al primer arranque:
+
+| Rol | Email | Contraseña |
+|---|---|---|
+| Supervisor | `supervisor@orion.com` | `Supervisor123!` |
+| Coordinador | `coordinador@orion.com` | `Coordinador123!` |
+| Técnico | `tecnico@orion.com` | `Tecnico123!` |
+
+## Resumen de la solución
+
+Sistema de gestión de mantenimiento de infraestructura ITS (activos, órdenes de trabajo, cuadrillas, dashboard operacional) para una concesión vial. Monorepo con 3 servicios: backend (Spring Boot, monolito modular con arquitectura hexagonal ligera), frontend (React + TypeScript) y PostgreSQL.
+
+**Documentación del proceso:**
+- [`BACKLOG_REFINED.md`](BACKLOG_REFINED.md) — análisis funcional y refinamiento de cada historia de usuario, entidades, reglas de negocio, estimación y priorización.
+- [`SCENARIO.md`](SCENARIO.md) — decisiones de arquitectura (ADRs) y justificación técnica.
+
+**Alcance implementado:** autenticación con roles (Supervisor/Coordinador/Técnico), gestión de activos y corredores viales, órdenes de trabajo con máquina de estados completa, cuadrillas (técnicos, líder, disponibilidad derivada), dashboard operacional. HU-005 (inventario) y HU-006 (averías automáticas) quedaron diseñadas y documentadas en `BACKLOG_REFINED.md` pero no implementadas, por restricción de tiempo de la prueba (24h) — priorización explícita, no un olvido.
+
+**Tests:** 45 pruebas unitarias en el backend (dominio y casos de uso), ejecutables con:
+```bash
+cd maintenance && ./gradlew test
+```
+
+---
+
 ## Introducción
 Bienvenido a la prueba técnica para el cargo de Desarrollador Full Stack.
 El objetivo de esta evaluación es validar tus capacidades de análisis, diseño, desarrollo y documentación mediante la construcción de una solución orientada a la gestión de mantenimiento de infraestructura ITS (Intelligent Transportation Systems).
