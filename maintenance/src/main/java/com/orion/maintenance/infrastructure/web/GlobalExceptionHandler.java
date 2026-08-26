@@ -1,7 +1,9 @@
 package com.orion.maintenance.infrastructure.web;
 
 import com.orion.maintenance.application.exception.CodigoDuplicadoException;
+import com.orion.maintenance.application.exception.OrdenTrabajoActivaExistenteException;
 import com.orion.maintenance.application.exception.RecursoNoEncontradoException;
+import com.orion.maintenance.domain.exception.TransicionInvalidaException;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
@@ -33,6 +35,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CodigoDuplicadoException.class)
     public ResponseEntity<Map<String, String>> handleCodigoDuplicado(CodigoDuplicadoException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(OrdenTrabajoActivaExistenteException.class)
+    public ResponseEntity<Map<String, String>> handleOrdenTrabajoActivaExistente(
+            OrdenTrabajoActivaExistenteException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(TransicionInvalidaException.class)
+    public ResponseEntity<Map<String, String>> handleTransicionInvalida(TransicionInvalidaException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", ex.getMessage()));
     }
 

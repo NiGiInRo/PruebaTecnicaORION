@@ -75,6 +75,18 @@ public class Activo {
         this.estado = EstadoActivo.OPERATIVO;
     }
 
+    public void marcarFueraDeServicio() {
+        this.estado = EstadoActivo.FUERA_DE_SERVICIO;
+    }
+
+    public void marcarEnMantenimiento() {
+        this.estado = EstadoActivo.EN_MANTENIMIENTO;
+    }
+
+    public void marcarOperativo() {
+        this.estado = EstadoActivo.OPERATIVO;
+    }
+
     public void actualizarDatos(
             String nombre,
             TipoActivo tipo,
