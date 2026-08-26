@@ -29,6 +29,8 @@ docker compose up --build -d frontend
 
 - Frontend: [http://localhost:5173](http://localhost:5173)
 - Backend: no publicado directamente al host, se accede vía el proxy del frontend en `/api/*` (ej. `http://localhost:5173/api/actuator/health`)
+- Swagger UI: [http://localhost:5173/api/swagger-ui.html](http://localhost:5173/api/swagger-ui.html) (login vía `POST /auth/login`, luego botón *Authorize* con el token)
+- OpenAPI JSON: `http://localhost:5173/api/v3/api-docs`
 
 ## Apagar
 

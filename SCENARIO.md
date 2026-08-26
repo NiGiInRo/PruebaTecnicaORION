@@ -60,7 +60,7 @@ Ver detalle completo de entidades, estados y reglas en `BACKLOG_REFINED.md`.
 **Diseñada, no implementada** (HU-006, ver ADR-6): generación automática de averías — no introduce entidades nuevas, reutiliza `Activo`/`OrdenTrabajo`.
 
 ## 6. Stack Tecnológico
-- Backend: Java 21, Spring Boot, Spring Security (JWT), Spring Data JPA
+- Backend: Java 21, Spring Boot, Spring Security (JWT), Spring Data JPA, springdoc-openapi (Swagger UI en `/swagger-ui.html`)
 - Frontend: React + TypeScript + Vite, sin librería de componentes (CSS propio)
 - Base de datos: PostgreSQL
 - Migraciones: Flyway
