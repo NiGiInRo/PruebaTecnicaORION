@@ -33,10 +33,16 @@ Desarrollado en un plazo de 24h (prueba técnica). Las decisiones de alcance y a
 ### ADR-6: Generación de averías (HU-006) — trigger manual primero, scheduler opcional reutilizando el mismo servicio
 **Decisión**: `POST /averias/simular` invoca un caso de uso `GenerarAveriaSimulada`; un `@Scheduled` opcional (activable por variable de entorno) invoca el mismo caso de uso.
 **Razón**: control total en demo (manual) sin duplicar reglas si luego se agrega el scheduler.
+**Estado**: diseñado y justificado, **no implementado** — priorizado fuera del alcance de las 24h (ver tabla de priorización en `BACKLOG_REFINED.md`).
 
 ### ADR-7: Bloqueo de consumo de inventario sin stock suficiente
 **Decisión**: `RegistrarConsumo` valida `cantidad <= stockActual` antes de persistir, rechaza si no alcanza.
 **Razón**: decisión de negocio confirmada — se prioriza integridad del inventario sobre flexibilidad operativa.
+**Estado**: diseñado y justificado, **no implementado** — mismo motivo que ADR-6.
+
+### ADR-8: Entidades de dominio anotadas directamente con JPA (sin modelo de persistencia separado)
+**Decisión**: las entidades en `domain.model` llevan anotaciones JPA, y los puertos de repositorio (`application.port`) extienden `JpaRepository`/`JpaSpecificationExecutor` directamente, en vez de una interfaz 100% agnóstica de framework con adaptador propio en `infrastructure`.
+**Razón**: pragmatismo de tiempo — evita duplicar cada entidad en un modelo de persistencia + mapper. El dominio conserva toda la lógica de negocio (máquinas de estado, invariantes) y los puertos siguen siendo mockeables en tests de casos de uso (ver `OrdenTrabajoServiceTest`, `ActivoServiceTest`, etc.). No es hexagonal 100% puro, es una concesión explícita y documentada.
 
 ## 4. Vista de Componentes
 
@@ -49,18 +55,20 @@ Desarrollado en un plazo de 24h (prueba técnica). Las decisiones de alcance y a
 Tres contenedores vía `docker-compose.yml`: `frontend`, `backend`, `db`. `docker compose up` sin pasos manuales adicionales (migraciones automáticas al arrancar el backend, seed de usuarios iniciales incluido).
 
 ## 5. Modelo de Datos
-Ver detalle completo de entidades, estados y reglas en `BACKLOG_REFINED.md`. Resumen: `Usuario`, `CorredorVial`, `Activo`, `OrdenTrabajo`, `OrdenTrabajoCuadrilla`, `Cuadrilla`, `CuadrillaTecnico`, `Material`, `MovimientoInventario`.
+Ver detalle completo de entidades, estados y reglas en `BACKLOG_REFINED.md`.
+**Implementadas**: `Usuario`, `CorredorVial`, `Activo`, `OrdenTrabajo`, `OrdenTrabajoCuadrilla`, `Cuadrilla`, `CuadrillaTecnico`.
+**Diseñadas, no implementadas** (HU-005/HU-006, ver ADR-6/ADR-7): `Material`, `MovimientoInventario`.
 
 ## 6. Stack Tecnológico
 - Backend: Java 21, Spring Boot, Spring Security (JWT), Spring Data JPA
-- Frontend: React + TypeScript + Vite
+- Frontend: React + TypeScript + Vite, sin librería de componentes (CSS propio)
 - Base de datos: PostgreSQL
 - Migraciones: Flyway
-- Testing: JUnit 5 + Mockito (backend), Vitest/React Testing Library (frontend)
+- Testing: JUnit 5 + Mockito (backend) — 45 tests. Sin tests automatizados de frontend por restricción de tiempo (ver riesgo abajo).
 - Contenedores: Docker + Docker Compose
 
 ## 7. Estrategia de Testing
-Foco en lógica de dominio con mayor riesgo de bugs: máquina de estados de OT, sincronización de estado Activo↔OT, regla de bloqueo de stock, exclusión de activos con OT correctiva ya abierta (HU-006). Tests de dominio sin dependencias externas (puro Java), complementados con tests de integración de los flujos críticos.
+Foco en lógica de dominio con mayor riesgo de bugs: máquina de estados de OT, sincronización de estado Activo↔OT y Cuadrilla↔OT, validaciones de disponibilidad/duplicados. Tests de dominio sin dependencias externas (puro Java), complementados con tests de casos de uso vía mocks de los puertos de repositorio. El frontend se validó manualmente end-to-end (los 3 roles, flujo completo de una OT) contra el `docker compose up` real, pero no quedaron pruebas automatizadas — riesgo aceptado explícitamente por la restricción de 24h.
 
 ## 8. Cómo ejecutar
 ```bash
