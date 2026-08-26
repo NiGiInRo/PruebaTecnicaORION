@@ -12,6 +12,7 @@ Sin pasos manuales adicionales: las migraciones de base de datos y el seed de us
 
 - Frontend: [http://localhost:5173](http://localhost:5173)
 - API backend: expuesta internamente en la red de Docker y accesible desde el frontend vía proxy en `/api/*` (no publicada directamente al host).
+- Documentación interactiva de la API (Swagger UI): [http://localhost:5173/api/swagger-ui.html](http://localhost:5173/api/swagger-ui.html) — inicia sesión con `POST /auth/login`, copia el `token` de la respuesta y úsalo en el botón *Authorize* (sin el prefijo `Bearer `).
 
 ### Usuarios de demostración
 
