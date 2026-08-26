@@ -31,9 +31,9 @@ Sistema de gestión de mantenimiento de infraestructura ITS (activos, órdenes d
 - [`BACKLOG_REFINED.md`](BACKLOG_REFINED.md) — análisis funcional y refinamiento de cada historia de usuario, entidades, reglas de negocio, estimación y priorización.
 - [`SCENARIO.md`](SCENARIO.md) — decisiones de arquitectura (ADRs) y justificación técnica.
 
-**Alcance implementado:** autenticación con roles (Supervisor/Coordinador/Técnico), gestión de activos y corredores viales, órdenes de trabajo con máquina de estados completa, cuadrillas (técnicos, líder, disponibilidad derivada), dashboard operacional. HU-005 (inventario) y HU-006 (averías automáticas) quedaron diseñadas y documentadas en `BACKLOG_REFINED.md` pero no implementadas, por restricción de tiempo de la prueba (24h) — priorización explícita, no un olvido.
+**Alcance implementado:** autenticación con roles (Supervisor/Coordinador/Técnico), gestión de activos y corredores viales, órdenes de trabajo con máquina de estados completa, cuadrillas (técnicos, líder, disponibilidad derivada), dashboard operacional, e inventario (materiales, entradas/salidas, bloqueo por stock insuficiente). HU-006 (averías automáticas) quedó diseñada y documentada en `BACKLOG_REFINED.md` pero no implementada, por restricción de tiempo de la prueba (24h) — priorización explícita, no un olvido.
 
-**Tests:** 45 pruebas unitarias en el backend (dominio y casos de uso), ejecutables con:
+**Tests:** 55 pruebas unitarias en el backend (dominio y casos de uso), ejecutables con:
 ```bash
 cd maintenance && ./gradlew test
 ```

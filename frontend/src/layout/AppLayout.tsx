@@ -7,6 +7,7 @@ const NAV_ITEMS: { to: string; label: string; roles?: string[] }[] = [
   { to: '/activos', label: 'Activos' },
   { to: '/cuadrillas', label: 'Cuadrillas' },
   { to: '/ordenes-trabajo', label: 'Órdenes de Trabajo' },
+  { to: '/materiales', label: 'Inventario' },
 ]
 
 export function AppLayout({ children }: { children: ReactNode }) {

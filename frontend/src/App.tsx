@@ -7,6 +7,7 @@ import { DashboardPage } from './features/dashboard/DashboardPage'
 import { ActivosPage } from './features/activos/ActivosPage'
 import { CuadrillasPage } from './features/cuadrillas/CuadrillasPage'
 import { OrdenesTrabajoPage } from './features/ordenes-trabajo/OrdenesTrabajoPage'
+import { MaterialesPage } from './features/materiales/MaterialesPage'
 
 function App() {
   return (
@@ -50,6 +51,16 @@ function App() {
               <ProtectedRoute>
                 <AppLayout>
                   <OrdenesTrabajoPage />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/materiales"
+            element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <MaterialesPage />
                 </AppLayout>
               </ProtectedRoute>
             }
