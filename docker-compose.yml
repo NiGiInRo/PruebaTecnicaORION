@@ -1,0 +1,47 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: orion_maintenance
+      POSTGRES_USER: orion
+      POSTGRES_PASSWORD: orion
+    volumes:
+      - orion_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orion -d orion_maintenance"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./maintenance
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: orion_maintenance
+      DB_USER: orion
+      DB_PASSWORD: orion
+      JWT_SECRET: change-this-secret-in-a-real-deployment-1234567890
+      AVERIA_AUTO_ENABLED: "false"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  orion_db_data:
