@@ -38,7 +38,7 @@ Desarrollado en un plazo de 24h (prueba técnica). Las decisiones de alcance y a
 ### ADR-7: Bloqueo de consumo de inventario sin stock suficiente
 **Decisión**: `RegistrarConsumo` valida `cantidad <= stockActual` antes de persistir, rechaza si no alcanza.
 **Razón**: decisión de negocio confirmada — se prioriza integridad del inventario sobre flexibilidad operativa.
-**Estado**: diseñado y justificado, **no implementado** — mismo motivo que ADR-6.
+**Estado**: implementado (HU-005). Las entradas no requieren OT; las salidas siempre quedan asociadas a la orden de trabajo durante la cual se consumió.
 
 ### ADR-8: Entidades de dominio anotadas directamente con JPA (sin modelo de persistencia separado)
 **Decisión**: las entidades en `domain.model` llevan anotaciones JPA, y los puertos de repositorio (`application.port`) extienden `JpaRepository`/`JpaSpecificationExecutor` directamente, en vez de una interfaz 100% agnóstica de framework con adaptador propio en `infrastructure`.
@@ -56,15 +56,15 @@ Tres contenedores vía `docker-compose.yml`: `frontend`, `backend`, `db`. `docke
 
 ## 5. Modelo de Datos
 Ver detalle completo de entidades, estados y reglas en `BACKLOG_REFINED.md`.
-**Implementadas**: `Usuario`, `CorredorVial`, `Activo`, `OrdenTrabajo`, `OrdenTrabajoCuadrilla`, `Cuadrilla`, `CuadrillaTecnico`.
-**Diseñadas, no implementadas** (HU-005/HU-006, ver ADR-6/ADR-7): `Material`, `MovimientoInventario`.
+**Implementadas**: `Usuario`, `CorredorVial`, `Activo`, `OrdenTrabajo`, `OrdenTrabajoCuadrilla`, `Cuadrilla`, `CuadrillaTecnico`, `Material`, `MovimientoInventario`.
+**Diseñada, no implementada** (HU-006, ver ADR-6): generación automática de averías — no introduce entidades nuevas, reutiliza `Activo`/`OrdenTrabajo`.
 
 ## 6. Stack Tecnológico
 - Backend: Java 21, Spring Boot, Spring Security (JWT), Spring Data JPA
 - Frontend: React + TypeScript + Vite, sin librería de componentes (CSS propio)
 - Base de datos: PostgreSQL
 - Migraciones: Flyway
-- Testing: JUnit 5 + Mockito (backend) — 45 tests. Sin tests automatizados de frontend por restricción de tiempo (ver riesgo abajo).
+- Testing: JUnit 5 + Mockito (backend) — 55 tests. Sin tests automatizados de frontend por restricción de tiempo (ver riesgo abajo).
 - Contenedores: Docker + Docker Compose
 
 ## 7. Estrategia de Testing

@@ -91,6 +91,28 @@ export interface DashboardIndicadores {
   tiempoPromedioResolucionHoras: number | null
 }
 
+export interface Material {
+  id: number
+  codigo: string
+  nombre: string
+  unidadMedida: string
+  stockActual: number
+  stockMinimo: number
+  stockBajo: boolean
+}
+
+export type TipoMovimientoInventario = 'ENTRADA' | 'SALIDA'
+
+export interface MovimientoInventario {
+  id: number
+  material: Material
+  ordenTrabajoId: number | null
+  tipo: TipoMovimientoInventario
+  cantidad: number
+  usuario: UsuarioResumen
+  fecha: string
+}
+
 export interface ApiError {
   error: string
 }

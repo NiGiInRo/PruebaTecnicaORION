@@ -4,6 +4,7 @@ import com.orion.maintenance.application.exception.CodigoDuplicadoException;
 import com.orion.maintenance.application.exception.OperacionInvalidaException;
 import com.orion.maintenance.application.exception.OrdenTrabajoActivaExistenteException;
 import com.orion.maintenance.application.exception.RecursoNoEncontradoException;
+import com.orion.maintenance.domain.exception.StockInsuficienteException;
 import com.orion.maintenance.domain.exception.TransicionInvalidaException;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -52,6 +53,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(OperacionInvalidaException.class)
     public ResponseEntity<Map<String, String>> handleOperacionInvalida(OperacionInvalidaException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(StockInsuficienteException.class)
+    public ResponseEntity<Map<String, String>> handleStockInsuficiente(StockInsuficienteException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", ex.getMessage()));
     }
 
