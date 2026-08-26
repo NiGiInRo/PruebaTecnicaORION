@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
+import com.orion.maintenance.application.exception.OperacionInvalidaException;
 import com.orion.maintenance.application.exception.OrdenTrabajoActivaExistenteException;
 import com.orion.maintenance.application.port.OrdenTrabajoRepository;
 import com.orion.maintenance.application.port.UsuarioRepository;
@@ -14,6 +15,7 @@ import com.orion.maintenance.domain.model.CorredorVial;
 import com.orion.maintenance.domain.model.Cuadrilla;
 import com.orion.maintenance.domain.model.EspecialidadCuadrilla;
 import com.orion.maintenance.domain.model.EstadoActivo;
+import com.orion.maintenance.domain.model.EstadoCuadrilla;
 import com.orion.maintenance.domain.model.OrdenTrabajo;
 import com.orion.maintenance.domain.model.PrioridadOrdenTrabajo;
 import com.orion.maintenance.domain.model.RolCuadrillaEnOT;
@@ -129,10 +131,39 @@ class OrdenTrabajoServiceTest {
                         1L, List.of(new AsignacionCuadrillaInput(1L, RolCuadrillaEnOT.EJECUCION_TECNICA)));
 
         assertThat(activo.getEstado()).isEqualTo(EstadoActivo.EN_MANTENIMIENTO);
+        assertThat(cuadrilla.getEstado()).isEqualTo(EstadoCuadrilla.EN_MISION);
     }
 
     @Test
-    void cerrarUnaOtDejaElActivoOperativo() {
+    void noPermiteAsignarUnaCuadrillaQueYaEstaEnMision() {
+        Activo activo = activoOperativo();
+        OrdenTrabajo ot =
+                new OrdenTrabajo(
+                        activo,
+                        TipoOrdenTrabajo.CORRECTIVO,
+                        PrioridadOrdenTrabajo.ALTA,
+                        "Falla",
+                        null,
+                        com.orion.maintenance.domain.model.OrigenOrdenTrabajo.MANUAL,
+                        supervisor());
+        Cuadrilla cuadrilla = new Cuadrilla("CUA-01", "Cuadrilla Norte", EspecialidadCuadrilla.ELECTRICA);
+        cuadrilla.marcarEnMision();
+        when(ordenTrabajoRepository.findById(1L)).thenReturn(Optional.of(ot));
+        when(cuadrillaService.obtenerPorId(1L)).thenReturn(cuadrilla);
+
+        assertThatThrownBy(
+                        () ->
+                                service()
+                                        .asignarCuadrillas(
+                                                1L,
+                                                List.of(
+                                                        new AsignacionCuadrillaInput(
+                                                                1L, RolCuadrillaEnOT.EJECUCION_TECNICA))))
+                .isInstanceOf(OperacionInvalidaException.class);
+    }
+
+    @Test
+    void cerrarUnaOtDejaElActivoYLaCuadrillaOperativos() {
         Activo activo = activoOperativo();
         activo.marcarFueraDeServicio();
         OrdenTrabajo ot =
@@ -144,7 +175,9 @@ class OrdenTrabajoServiceTest {
                         null,
                         com.orion.maintenance.domain.model.OrigenOrdenTrabajo.MANUAL,
                         supervisor());
-        ot.asignarCuadrilla(new Cuadrilla("CUA-01", "Cuadrilla Norte", EspecialidadCuadrilla.ELECTRICA), RolCuadrillaEnOT.EJECUCION_TECNICA);
+        Cuadrilla cuadrilla = new Cuadrilla("CUA-01", "Cuadrilla Norte", EspecialidadCuadrilla.ELECTRICA);
+        cuadrilla.marcarEnMision();
+        ot.asignarCuadrilla(cuadrilla, RolCuadrillaEnOT.EJECUCION_TECNICA);
         ot.iniciarEjecucion();
         when(ordenTrabajoRepository.findById(1L)).thenReturn(Optional.of(ot));
         when(ordenTrabajoRepository.save(any(OrdenTrabajo.class))).thenAnswer(inv -> inv.getArgument(0));
@@ -152,5 +185,6 @@ class OrdenTrabajoServiceTest {
         service().cerrar(1L, "Reparado");
 
         assertThat(activo.getEstado()).isEqualTo(EstadoActivo.OPERATIVO);
+        assertThat(cuadrilla.getEstado()).isEqualTo(EstadoCuadrilla.DISPONIBLE);
     }
 }

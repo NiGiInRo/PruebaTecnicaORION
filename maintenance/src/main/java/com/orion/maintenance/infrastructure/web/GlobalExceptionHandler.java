@@ -1,6 +1,7 @@
 package com.orion.maintenance.infrastructure.web;
 
 import com.orion.maintenance.application.exception.CodigoDuplicadoException;
+import com.orion.maintenance.application.exception.OperacionInvalidaException;
 import com.orion.maintenance.application.exception.OrdenTrabajoActivaExistenteException;
 import com.orion.maintenance.application.exception.RecursoNoEncontradoException;
 import com.orion.maintenance.domain.exception.TransicionInvalidaException;
@@ -46,6 +47,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TransicionInvalidaException.class)
     public ResponseEntity<Map<String, String>> handleTransicionInvalida(TransicionInvalidaException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(OperacionInvalidaException.class)
+    public ResponseEntity<Map<String, String>> handleOperacionInvalida(OperacionInvalidaException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", ex.getMessage()));
     }
 

@@ -1,5 +1,6 @@
 package com.orion.maintenance.application.service;
 
+import com.orion.maintenance.application.exception.OperacionInvalidaException;
 import com.orion.maintenance.application.exception.OrdenTrabajoActivaExistenteException;
 import com.orion.maintenance.application.exception.RecursoNoEncontradoException;
 import com.orion.maintenance.application.port.OrdenTrabajoRepository;
@@ -7,6 +8,7 @@ import com.orion.maintenance.application.port.OrdenTrabajoSpecifications;
 import com.orion.maintenance.application.port.UsuarioRepository;
 import com.orion.maintenance.domain.model.Activo;
 import com.orion.maintenance.domain.model.Cuadrilla;
+import com.orion.maintenance.domain.model.EstadoCuadrilla;
 import com.orion.maintenance.domain.model.EstadoOrdenTrabajo;
 import com.orion.maintenance.domain.model.OrdenTrabajo;
 import com.orion.maintenance.domain.model.OrigenOrdenTrabajo;
@@ -66,7 +68,12 @@ public class OrdenTrabajoService {
         OrdenTrabajo ot = obtenerPorId(otId);
         for (AsignacionCuadrillaInput asignacion : asignaciones) {
             Cuadrilla cuadrilla = cuadrillaService.obtenerPorId(asignacion.cuadrillaId());
+            if (cuadrilla.getEstado() != EstadoCuadrilla.DISPONIBLE) {
+                throw new OperacionInvalidaException(
+                        "La cuadrilla " + cuadrilla.getCodigo() + " no está disponible");
+            }
             ot.asignarCuadrilla(cuadrilla, asignacion.rol());
+            cuadrilla.marcarEnMision();
         }
         ot.getActivo().marcarEnMantenimiento();
         return ordenTrabajoRepository.save(ot);
@@ -82,6 +89,7 @@ public class OrdenTrabajoService {
         OrdenTrabajo ot = obtenerPorId(otId);
         ot.cerrar(observaciones);
         ot.getActivo().marcarOperativo();
+        liberarCuadrillas(ot);
         return ordenTrabajoRepository.save(ot);
     }
 
@@ -89,7 +97,12 @@ public class OrdenTrabajoService {
         OrdenTrabajo ot = obtenerPorId(otId);
         ot.cancelar(motivo);
         ot.getActivo().marcarOperativo();
+        liberarCuadrillas(ot);
         return ordenTrabajoRepository.save(ot);
+    }
+
+    private void liberarCuadrillas(OrdenTrabajo ot) {
+        ot.getCuadrillasAsignadas().forEach(otc -> otc.getCuadrilla().marcarDisponible());
     }
 
     @Transactional(readOnly = true)
